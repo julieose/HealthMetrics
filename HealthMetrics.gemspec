@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["julianureevs@gmail.com"]
 
   spec.summary = "Универсальный Ruby-гем для анализа показателей здоровья."
-  s.description = <<-DESC
+  spec.description = <<-DESC
 HealthMetrics — это комплексный Ruby-гем для анализа здоровья. 
 📊 Основные возможности:
 • Расчет ИМТ с категоризацией рисков
@@ -23,9 +23,10 @@ HealthMetrics — это комплексный Ruby-гем для анализ�
 DESC
   spec.homepage = "https://github.com/julieose/HealthMetrics"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.1.0"с
+  spec.required_ruby_version = ">= 3.1.0"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/julieose/HealthMetrics"
+  spec.metadata["changelog_uri"] = "https://github.com/julieose/HealthMetrics/blob/main/CHANGELOG.md"
   
 
   # Specify which files should be added to the gem when it is released.
