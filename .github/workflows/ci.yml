@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Ruby ${{ matrix.ruby-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ["3.1", "3.2", "3.3"] # Поддержка Ruby версий
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true # Автоматический кэш Gemfile.lock
+
+      - name: Run tests
+        run: bundle exec rspec
+
+  lint:
+    name: Lint and Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2" # Фиксированная версия для линтинга
+
+      - name: Install dependencies
+        run: |
+          gem install standard
+          bundle install
+
+      - name: Run StandardRB
+        run: bundle exec standardrb --fix
+
+      - name: Run RSpec tests
+        run: bundle exec rspec
+
+      - name: Check formatting
+        run: bundle exec standardrb --format json > standard-report.json
+
+      - name: Upload code coverage (если используется SimpleCov)
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage
+          path: coverage
