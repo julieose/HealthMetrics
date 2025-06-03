@@ -1,0 +1,10 @@
+extends: .standard.yml
+
+ignore:
+  - "!**/spec/**/*.rb"  # Проверять ТОЛЬКО тесты
+
+rules:
+  RSpec/DescribeClass:
+    Enabled: true       # Строгая проверка describe
+  RSpec/MultipleExpectations:
+    Max: 3              # До 3 expect на тест

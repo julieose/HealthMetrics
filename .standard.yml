@@ -1,3 +1,36 @@
 # For available configuration options, see:
 #   https://github.com/standardrb/standard
 ruby_version: 3.1
+fix: true                # Автоисправление простых нарушений
+parallel: true           # Ускорение проверки
+format: progress         # Формат вывода
+
+# Игнорируемые файлы
+ignore:
+  - "**/db/**/*.rb"
+  - "**/spec/**/*.rb"    # Тесты проверяем отдельно
+  - "**/templates/**/*"
+
+# Плагины
+plugins:
+  - standard-performance # Проверка производительности
+  - rubocop-rspec       # Для RSpec-спецификаций
+
+# Кастомизация правил
+rules:
+  Layout/LineLength:
+    Max: 120           # Длина строки до 120 символов
+    IgnoredPatterns:
+      - '\A#'          # Игнорировать комментарии
+
+  Metrics/MethodLength:
+    Max: 15            # Макс. 15 строк в методе
+
+  Style/Documentation:
+    Enabled: false     # Не требовать docs для каждого класса
+
+  # Доп. правила для RSpec
+  RSpec/DescribeClass:
+    Enabled: false
+  RSpec/NestedGroups:
+    Max: 3
