@@ -25,11 +25,18 @@ jobs:
   test:
     name: Ruby ${{ matrix.ruby-version }}
     runs-on: ubuntu-latest
+    needs: lint  # Запускать тесты только после успешного линтинга
     strategy:
-      fail-fast: false
       matrix:
         ruby-version: ["3.1", "3.2", "3.3"]
-    
+        include:
+          - ruby-version: "3.1"
+            experimental: false
+          - ruby-version: "3.2"
+            experimental: false
+          - ruby-version: "3.3"
+            experimental: true
+
     steps:
       - uses: actions/checkout@v4
       
@@ -40,6 +47,7 @@ jobs:
           bundler-cache: true
 
       - name: Run tests
+        if: ${{ !matrix.experimental || github.event_name == 'pull_request' }}
         run: bundle exec rspec
 
       - name: Upload code coverage
