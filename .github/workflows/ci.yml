@@ -2,30 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  test:
-    name: Ruby ${{ matrix.ruby-version }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        ruby-version: ["3.1", "3.2", "3.3"] # Поддержка Ruby версий
-
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby-version }}
-          bundler-cache: true # Автоматический кэш Gemfile.lock
-
-      - name: Run tests
-        run: bundle exec rspec
-
   lint:
     name: Lint and Code Quality
     runs-on: ubuntu-latest
@@ -35,25 +16,43 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.2" # Фиксированная версия для линтинга
-
-      - name: Install dependencies
-        run: |
-          gem install standard
-          bundle install
+          ruby-version: "3.2"
+          bundler-cache: true
 
       - name: Run StandardRB
-        run: bundle exec standardrb --fix
+        run: bundle exec standardrb
 
-      - name: Run RSpec tests
+  test:
+    name: Ruby ${{ matrix.ruby-version }}
+    runs-on: ubuntu-latest
+    needs: lint  # Запускать тесты только после успешного линтинга
+    strategy:
+      matrix:
+        ruby-version: ["3.1", "3.2", "3.3"]
+        include:
+          - ruby-version: "3.1"
+            experimental: false
+          - ruby-version: "3.2"
+            experimental: false
+          - ruby-version: "3.3"
+            experimental: true
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+
+      - name: Run tests
+        if: ${{ !matrix.experimental || github.event_name == 'pull_request' }}
         run: bundle exec rspec
 
-      - name: Check formatting
-        run: bundle exec standardrb --format json > standard-report.json
-
-      - name: Upload code coverage (если используется SimpleCov)
+      - name: Upload code coverage
+        if: ${{ always() && matrix.ruby-version == '3.2' }}
         uses: actions/upload-artifact@v3
-        if: always()
         with:
-          name: coverage
+          name: coverage-report
           path: coverage
