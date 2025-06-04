@@ -39,36 +39,39 @@ user = HealthMetrics::Profile.new(
   height: 1.75,  # в метрах
   age: 30,
   sex: :male     # :male / :female
+  activity_level: moderate
 )
 Доступные методы:
 📊 Основные показатели:
 
 Расчет ИМТ
-bmi = user.calculate_bmi
+bmi = user.calculate(weight, height)
+category = user.category(bmi)
 Возвращает индекс массы тела
 
 Идеальный вес
-ideal_weight = user.calculate_ideal_weight
+ideal_weight = user.ideal_weight(height, sex)
+
 Расчет оптимального веса по формуле
 
 🔥 Нутриенты и калории
 Суточная норма калорий
-daily_calories = user.daily_calorie_needs
+daily_calories = user.daily_needs(weight, height, age, sex, activity_level)
+calories_burned = user.burned (activity, duration, weight)
 Количество калорий для поддержания веса
 
 Распределение БЖУ
-macro_distribution = user.calculate_macro_distribution(goal: :lose_weight)
+macro_distribution = user.distribution(calories:, goal:)
 Оптимальное соотношение белков/жиров/углеводов
-Доступные цели: :lose_weight, :gain_mass
 
 💪 Состав тела
 Анализ тела
-body_composition = user.calculate_body_composition(waist: 94, neck: 38)
+body_composition = user.body_fat_percentage(sex:, waist:, neck:, hip: nil, height:)
 Расчет процента жира и мышечной массы
 
 ⏱ Прогнозирование
 Время до цели
-time_to_goal = user.calculate_time_to_reach_target_weight(target_weight: 65, daily_calories: 2000)
+time_to_goal = user.estimate(current_weight:, target_weight:, daily_deficit: 500)
 Оценка времени достижения целевого веса
 
 Сожженные калории
@@ -76,5 +79,5 @@ calories_burned = user.calculate_calories_burned(activity_type: :running, durati
 
 ⚠️ Риски здоровья
 Оценка рисков
-health_risk = user.calculate_health_risks
+health_risk = user.assess(bmi:, age:, sex:)
 Анализ потенциальных заболеваний
